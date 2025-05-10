@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện Nói Tiếng Anh - Từ Vựng Đồ Ăn</title>
+    <style>
+        /* Basic styling for the body and container */
+        body {
+            font-family: Arial, sans-serif; /* Use Arial or a generic sans-serif font */
+            background: #f0f8ff; /* Light blue background */
+            padding: 20px;
+            line-height: 1.6; /* Improved readability */
+            color: #333; /* Default text color */
+        }
+
+        /* Container for the main content */
+        .container {
+            max-width: 600px; /* Maximum width */
+            margin: 20px auto; /* Center the container and add vertical margin */
+            background: #fff; /* White background for the content area */
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
+            text-align: center; /* Center align text within the container */
+        }
+
+        /* Heading style */
+        h1 {
+            text-align: center;
+            color: #0056b3; /* Darker blue for heading */
+            margin-bottom: 20px;
+        }
+
+        /* Style for the question area */
+        .question {
+            margin: 20px 0;
+            font-size: 1.2em; /* Slightly larger font for questions */
+            font-weight: bold;
+            color: #555; /* Grey color for question text */
+        }
+
+        /* Style for the answer display box */
+        .answer-box {
+            background: #eef; /* Light blue background */
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            min-height: 1.5em; /* Ensure box has some height even if empty */
+            text-align: left; /* Align answer text to the left */
+            word-wrap: break-word; /* Break long words */
+        }
+
+        /* Style for buttons */
+        button {
+            margin: 10px 5px; /* Add margin around buttons */
+            padding: 12px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #007bff; /* Primary blue color */
+            color: white;
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+
+        /* Button hover effect */
+        button:hover {
+            background: #0056b3; /* Darker blue on hover */
+        }
+
+        /* Disabled button style */
+        button:disabled {
+            background: #cccccc; /* Grey out disabled buttons */
+            cursor: not-allowed;
+        }
+
+        /* Style for the image */
+        .image {
+            display: none; /* Initially hidden */
+            width: 100%; /* Make image responsive */
+            max-width: 400px; /* Maximum width for the image */
+            height: auto; /* Maintain aspect ratio */
+            margin: 20px auto; /* Center image and add vertical margin */
+            border-radius: 8px; /* Rounded corners for the image */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for image */
+        }
+
+        /* Style for feedback messages */
+        .result {
+            background: #e0ffe0; /* Light green background */
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            text-align: left;
+            border: 1px solid #a3e0a3; /* Green border */
+        }
+
+        /* Style for the share link area */
+        .summary {
+            background: #ffffcc; /* Light yellow background */
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            text-align: left;
+            border: 1px solid #ffeb3b; /* Yellow border */
+        }
+
+        /* Style for links within the summary */
+        .summary a {
+            color: #0056b3; /* Link color */
+            text-decoration: none; /* No underline */
+        }
+
+        /* Link hover effect */
+        .summary a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Luyện Nói Tiếng Anh - Từ Vựng Đồ Ăn</h1>
+        <div id="questionArea" class="question">Bấm "Bắt đầu" để nghe câu hỏi.</div>
+        <img id="questionImage" class="image" src="" alt="Hình ảnh câu hỏi" style="display: none;" />
+        <div>
+            <button onclick="speakQuestion()">🔊 Bắt đầu</button>
+            <button onclick="startRecognition()">🎤 Trả lời</button>
+        </div>
+        <div id="transcript" class="answer-box"></div>
+        <div id="feedback" class="result"></div>
+        <div>
+            <button onclick="nextQuestion()">➡️ Câu hỏi tiếp theo</button>
+            <button onclick="shareResult()">📤 Chia sẻ kết quả</button>
+        </div>
+        <div id="shareLink" class="summary"></div>
+    </div>
+
+    <script>
+        // Array of questions and corresponding images
+        const questions = [
+            { question: "What's your name?", image: "" }, // Câu hỏi 1: Không có hình ảnh
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504141034271092312.jpg" }, // Hình ảnh: Táo
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504141033314127562.jpg" }, // Hình ảnh: Chuối
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504141033506151991.jpg" }, // Hình ảnh: Nho
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181532276827489.jpg" }, // Hình ảnh: Dâu tây
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181533175517785.jpg" }, // Hình ảnh: Dưa hấu
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181534478555845.jpg" }, // Hình ảnh: Xoài
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504141034065919288.jpg" }, // Hình ảnh: Dứa
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181537008328849.jpg" }, // Hình ảnh: Anh đào
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181539464041236.jpg" }, // Hình ảnh: Bông cải xanh
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181542372646542.jpg" }, // Hình ảnh: Cà rốt
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181544363516825.jpg" }, // Hình ảnh: Ngô
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181610006728723.jpg" }, // Hình ảnh: Gạo
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181602176468296.jpg" }, // Hình ảnh: Mì
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181602312331406.jpg" }, // Hình ảnh: Thịt gà
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181603211314197.jpg" }, // Hình ảnh: Thịt bò
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181603346252980.jpg" }, // Hình ảnh: Cá
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181603506586124.jpg" }, // Hình ảnh: Trứng
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181604021443793.jpg" }, // Hình ảnh: Bánh pizza
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181604489459921.jpg" }, // Hình ảnh: Bánh hamburger
+            { question: "What can you see in this image?", image: "https://yourhomework.net/yhw/f/yhw-voca/2025/04/1/202504181607048976434.jpg" }  // Hình ảnh: Kem
+        ];
+
+        let currentIndex = 0; // Tracks the current question index
+        let studentAnswers = []; // Stores student's recorded answers
+
+        // Check for SpeechRecognition API support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US'; // Set recognition language to English
+            recognition.continuous = false; // Capture a single utterance
+            recognition.interimResults = false; // Only return final results
+
+            // Event handler for recognition results
+            recognition.onresult = function (event) {
+                // Get the transcript from the results
+                const transcript = event.results.length > 0 ? event.results[0][0].transcript : '';
+                document.getElementById("transcript").textContent = `Câu trả lời của bạn: ${transcript}`;
+                studentAnswers[currentIndex] = transcript; // Store the answer
+                provideFeedback(transcript); // Provide feedback
+            };
+
+            // Event handler for recognition errors
+            recognition.onerror = function(event) {
+                console.error("Lỗi nhận dạng giọng nói", event.error);
+                document.getElementById("feedback").textContent = `Lỗi trong quá trình nhận dạng giọng nói: ${event.error}`;
+            };
+        } else {
+            // Handle lack of Speech Recognition support
+            console.warn("API Nhận dạng giọng nói không được hỗ trợ trong trình duyệt này.");
+            const answerButton = document.querySelector('button[onclick="startRecognition()"]');
+            if (answerButton) {
+                answerButton.disabled = true; // Disable the answer button
+                answerButton.textContent = "🎤 API giọng nói không được hỗ trợ"; // Update button text
+            }
+        }
+
+        // Function to speak the current question
+        function speakQuestion() {
+            // Check if all questions are completed
+            if (currentIndex >= questions.length) {
+                document.getElementById("questionArea").textContent = "🎉 Bạn đã hoàn thành tất cả các câu hỏi.";
+                document.getElementById("questionImage").style.display = 'none'; // Hide image
+                return;
+            }
+
+            const currentQuestion = questions[currentIndex];
+            const utterance = new SpeechSynthesisUtterance(currentQuestion.question);
+            utterance.lang = 'en-US'; // Set speech language to English
+            speechSynthesis.speak(utterance); // Speak the question
+            document.getElementById("questionArea").textContent = `Câu hỏi ${currentIndex + 1}: ${currentQuestion.question}`; // Display question text
+
+            const imgElement = document.getElementById("questionImage");
+            // Display image if available for the current question
+            if (currentQuestion.image && currentQuestion.image.trim() !== "") {
+                imgElement.src = currentQuestion.image;
+                imgElement.style.display = 'block';
+            } else {
+                imgElement.style.display = 'none'; // Hide image if no URL
+            }
+        }
+
+        // Function to start speech recognition
+        function startRecognition() {
+            if (recognition) {
+                try {
+                    document.getElementById("transcript").textContent = "Đang nghe..."; // Indicate listening state
+                    document.getElementById("feedback").textContent = ""; // Clear previous feedback
+                    recognition.start(); // Start recognition
+                } catch (e) {
+                    console.error("Lỗi khi bắt đầu nhận dạng:", e);
+                    document.getElementById("transcript").textContent = "Không thể khởi động micro."; // Error message
+                }
+            } else {
+                document.getElementById("transcript").textContent = "Nhận dạng giọng nói không khả dụng."; // Message if API not available
+            }
+        }
+
+        // Function to provide simple feedback on the answer
+        function provideFeedback(answer) {
+            let comment = "✅ Đã ghi lại câu trả lời.";
+            if (!answer || answer.trim() === "") {
+                comment = "⚠️ Không phát hiện thấy câu trả lời.";
+            }
+            document.getElementById("feedback").textContent = comment; // Display feedback
+        }
+
+        // Function to move to the next question
+        function nextQuestion() {
+            currentIndex++; // Increment question index
+            document.getElementById("transcript").textContent = ""; // Clear transcript
+            document.getElementById("feedback").textContent = ""; // Clear feedback
+            const imgElement = document.getElementById("questionImage");
+            imgElement.src = ""; // Clear previous image source
+            imgElement.style.display = 'none'; // Hide image immediately
+
+            // Check if there are more questions
+            if (currentIndex < questions.length) {
+                speakQuestion(); // Speak the next question
+            } else {
+                // Handle completion of all questions
+                document.getElementById("questionArea").textContent = "🎉 Bạn đã hoàn thành tất cả các câu hỏi.";
+                // Disable buttons
+                const nextButton = document.querySelector('button[onclick="nextQuestion()"]');
+                const answerButton = document.querySelector('button[onclick="startRecognition()"]');
+                const startButton = document.querySelector('button[onclick="speakQuestion()"]');
+                if (nextButton) nextButton.disabled = true;
+                if (answerButton) answerButton.disabled = true;
+                if (startButton) startButton.disabled = true;
+            }
+        }
+
+        // Function to generate and share results
+        function shareResult() {
+            // Create an HTML string with all questions and answers
+            const list = questions.map((q, i) => {
+                return `<p><strong>Câu hỏi ${i + 1}:</strong> ${q.question}<br/><em>Câu trả lời:</em> ${studentAnswers[i] || "(không có câu trả lời)"}</p>`;
+            }).join('');
+
+            // Full HTML content for the results page
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="vi">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Kết quả Luyện Nói</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                        h3 { color: #333; }
+                        p { margin-bottom: 10px; }
+                        strong { color: #007bff; }
+                        em { color: #555; }
+                        .result-container { background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="result-container">
+                        <h3>Kết quả Luyện Nói</h3>
+                        ${list}
+                    </div>
+                </body>
+                </html>`;
+
+            // Create a Blob from the HTML content and generate a URL
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const shareLinkDiv = document.getElementById("shareLink");
+            // Display a link to view the results
+            shareLinkDiv.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">🔗 Xem kết quả trực tuyến</a>`;
+
+            // Optional: To prompt download instead of opening in a new tab
+            // const a = document.createElement('a');
+            // a.href = url;
+            // a.download = 'ket_qua_luyen_noi.html';
+            // document.body.appendChild(a);
+            // a.click();
+            // document.body.removeChild(a);
+            // URL.revokeObjectURL(url); // Clean up the URL after download
+        }
+    </script>
+</body>
+</html>
